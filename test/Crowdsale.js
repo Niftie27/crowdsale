@@ -1,4 +1,3 @@
-const { wait } = require('@testing-library/user-event/dist/utils');
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
@@ -17,7 +16,7 @@ describe('Crowdsale', () => {
     beforeEach(async () => {
         // Load Contracts
         const Crowdsale = await ethers.getContractFactory("Crowdsale")
-        const Token = await ethers.getContractFactory("Token1")
+        const Token = await ethers.getContractFactory("Token")
 
         //Deploy token
         token = await Token.deploy("Dapp University", "DAPP", "1000000")

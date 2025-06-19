@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "./Token1.sol";
+import "./Token.sol";
 
 contract Crowdsale {
     address public owner;
-    Token1 public token;
+    Token public token;
     uint256 public price;
     uint256 public maxTokens;
     uint256 public tokensSold;
@@ -14,7 +14,7 @@ contract Crowdsale {
     event Finalize(uint256 tokensSold, uint256 ethRaised);
 
     constructor(
-        Token1 _token,
+        Token _token,
         uint256 _price,
         uint256 _maxTokens
     ) {
