@@ -11,14 +11,14 @@ async function main() {
     // Deploy Token
     const Token = await hre.ethers.getContractFactory('Token')
     let token = await Token.deploy(NAME, SYMBOL, MAX_SUPPLY)
-
     await token.deployed()
+
     console.log(`Token deployed to: ${token.address}\n`)
 
-    // Deploy Token
+    // Deploy Crowdsale
     const Crowdsale = await hre.ethers.getContractFactory('Crowdsale')
-    let crowdsale = await Token.deploy(token.address, PRICE, ethers.utils.parseUnits(MAX_SUPPLY, 'ether'))
-    await token.deployed()
+    let crowdsale = await Crowdsale.deploy(token.address, PRICE, ethers.utils.parseUnits(MAX_SUPPLY, 'ether'))
+    await crowdsale.deployed()
 
     console.log(`Crowdsale deployed to: ${crowdsale.address}\n`)
 

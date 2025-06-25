@@ -5,35 +5,93 @@ import { ethers } from 'ethers';
 // Components
 import Navigation from './Navigation';
 import Info from './Info';
+import Loading from './Loading';
+import Progress from './Progress';
+
+// ABIs
+import TOKEN_ABI from '../abis/Token.json'
+import CROWDSALE_ABI from '../abis/Crowdsale.json'
+
+// config
+import config from '../config.json';
 
 function App() {
 
+    // null means "no provider yet", 0 means "0 tokens yet"
+    const [provider, setProvider] = useState(null)
+    const [crowdsale, setCrowdsale] = useState(null)
+
     const [account, setAccount] = useState(null)
+    const [accountBalance, setAccountBalance] = useState(0)
 
-    // account -> var of current account Value
-    // setAccount('0x0...') -> Function to update account value
-    // null in default value
+    const [price, setPrice] = useState(0)
+    const [maxTokens, setMaxTokens] = useState(0)
+    const [tokensSold, setTokensSold] = useState(0)
 
-    const loadBockchainData = async () => {
+    const [isLoading, setIsLoading] = useState(true)
+
+    const loadBlockchainData = async () => {
+        // Initiate provider
         const provider = new ethers.providers.Web3Provider(window.ethereum)
+        setProvider(provider)
 
+        // Initiate contracts
+        const token = new ethers.Contract(config[31337].token.address, TOKEN_ABI, provider)
+        const crowdsale = new ethers.Contract(config[31337].crowdsale.address, CROWDSALE_ABI, provider)
+        setCrowdsale(crowdsale)
+        console.log("Token deployed to:", token.address);
+        console.log("Crowdsale deployed to:", crowdsale.address);
+
+        // Set accounts
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
         const account = ethers.utils.getAddress(accounts[0])
-        console.log(account)
         setAccount(account)
 
+        // Fetch account balance
+        const accountBalance = ethers.utils.formatUnits(await token.balanceOf(account), 18)
+        setAccountBalance(accountBalance)
+
+        // Fetch
+        const price = ethers.utils.formatUnits(await crowdsale.price(), 18)
+        setPrice(price)
+
+        // Fetch
+        const maxTokens = ethers.utils.formatUnits(await crowdsale.maxTokens(), 18)
+        setMaxTokens(maxTokens)
+
+        // Fetch
+        const tokensSold = ethers.utils.formatUnits(await crowdsale.tokensSold(), 18)
+        setTokensSold(tokensSold)
+
+
+        setIsLoading(false)
     }
 
     useEffect(() => {
-        loadBockchainData()
-    })
+        if (isLoading) {
+            loadBlockchainData()
+        }  
+    }, [isLoading])
 
     return(
         <Container>
             <Navigation />
+
+            <h1 className='my-4 text-center'>Introducing DApp Token!</h1>
+
+            {isLoading ? (
+                <Loading />
+            ) : (
+                <>
+                <p className ='text-center'><strong>Current Price:</strong> {price} ETH</p>
+                <Progress tokensSold={tokensSold} maxTokens={maxTokens} />
+                </>
+            )}
+
             <hr />
+            
             {account && (
-            <Info account={account} />
+                <Info account={account} accountBalance={accountBalance}/>
             )}
         </Container>
     )
