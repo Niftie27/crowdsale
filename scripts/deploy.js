@@ -15,9 +15,17 @@ async function main() {
 
     console.log(`Token deployed to: ${token.address}\n`)
 
+    // ✅ Added: Get current timestamp
+    const now = Math.floor(Date.now() / 1000) // ✅
+
+    // ✅ Added: Set opening/closing times
+    const openingTime = now               // ✅ Starts with deployment
+    const closingTime = now + 7 * 24 * 60 * 60 // ✅ Ends in 7 days
+
     // Deploy Crowdsale
+    // ✅ Fixed: Pass 5 constructor arguments to match updated Crowdsale.sol
     const Crowdsale = await hre.ethers.getContractFactory('Crowdsale')
-    let crowdsale = await Crowdsale.deploy(token.address, PRICE, ethers.utils.parseUnits(MAX_SUPPLY, 'ether'))
+    let crowdsale = await Crowdsale.deploy(token.address, PRICE, ethers.utils.parseUnits(MAX_SUPPLY, 'ether'), openingTime, closingTime)
     await crowdsale.deployed()
 
     console.log(`Crowdsale deployed to: ${crowdsale.address}\n`)

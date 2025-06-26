@@ -8,6 +8,8 @@ import Buy from './Buy';
 import Info from './Info';
 import Loading from './Loading';
 import Progress from './Progress';
+import Countdown from './Countdown';
+
 
 // ABIs
 import TOKEN_ABI from '../abis/Token.json'
@@ -79,6 +81,7 @@ function App() {
             <Navigation />
 
             <h1 className='my-4 text-center'>Introducing DApp Token!</h1>
+            <Countdown />
 
             {isLoading ? (
                 <Loading />
